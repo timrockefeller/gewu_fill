@@ -5,6 +5,7 @@
 // @description  never thought to crack
 // @author       Kitekii
 // @match        http://gewulab.com/test/*/show
+// @include      http://www.gewulab.com/test/*/show
 // @grant        none
 // @require      https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js
 // @require      http://gewulab.com/bundles/topxiaweb/js/controller/quiz-question/report/float.js?v7.5.23
