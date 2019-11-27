@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         GeWuLab cracker
-// @namespace    http://kitekii.pw/
+// @namespace    http://iik.moe/
 // @version      0.1
 // @description  never thought to crack
 // @author       Kitekii
