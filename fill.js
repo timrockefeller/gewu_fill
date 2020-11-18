@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         GeWuLab cracker
 // @namespace    http://iik.moe/
-// @version      0.1
+// @version      0.2
 // @description  never thought to crack
 // @author       Kitekii
 // @match        http://gewulab.com/test/*/show
 // @include      http://www.gewulab.com/test/*/show
 // @grant        none
-// @require      https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js
+// @require      http://www.gewulab.com/assets/libs/jquery/1.11.1/jquery.js?7.5.54
 // @require      http://gewulab.com/bundles/topxiaweb/js/controller/quiz-question/report/float.js?v7.5.23
 // @require      http://gewulab.com/bundles/topxiaweb/js/controller/quiz-question/report/judge.js?v7.5.23
 // @run-at       document-end
@@ -84,24 +84,24 @@ function Report(){
 
     this.get_rule_html=function(question_id){
         var rule_html='';
-		var rules;
-		rules=this.question[question_id].rule;
+        var rules;
+        rules=this.question[question_id].rule;
         return rules;
-		for(var i=0;i<rules.length;i++){
-			var type=rules[i].type;
-			var number=rules[i].value;
-			var del_score=rules[i].score;
-			if(type=='dec'){
-				rule_html=rule_html+'保留小数'+number+'位，扣分'+del_score+'分'+'<br/>';
-			}else if(type=='eff'){
-				rule_html=rule_html+'有效位数'+number+'位，扣分'+del_score+'分'+'<br/>';
-			}else if(type=='per'){
-				rule_html=rule_html+'误差百分比±'+number+'%，扣分'+del_score+'分'+'<br/>';
-			}else{
-				rule_html=rule_html+'误差数值±'+number+'，扣分'+del_score+'分'+'<br/>';
-			}
+        for(var i=0;i<rules.length;i++){
+            var type=rules[i].type;
+            var number=rules[i].value;
+            var del_score=rules[i].score;
+            if(type=='dec'){
+                rule_html=rule_html+'保留小数'+number+'位，扣分'+del_score+'分'+'<br/>';
+            }else if(type=='eff'){
+                rule_html=rule_html+'有效位数'+number+'位，扣分'+del_score+'分'+'<br/>';
+            }else if(type=='per'){
+                rule_html=rule_html+'误差百分比±'+number+'%，扣分'+del_score+'分'+'<br/>';
+            }else{
+                rule_html=rule_html+'误差数值±'+number+'，扣分'+del_score+'分'+'<br/>';
+            }
 
-		}
+        }
         return rule_html;
     };
 
@@ -155,7 +155,7 @@ function Report(){
         info.standard=function(){
             var _standard;
             try{
-                eval(obj.find('standard').text());
+                eval(window.atob(obj.find('standard').text()));
             }catch(exception) {
                 console.warn(exception);
             }
@@ -164,7 +164,7 @@ function Report(){
         info.judge=function(){
             var _judge;
             try{
-                eval(obj.find('judge').text());
+                eval(window.atob(obj.find('judge').text()));
             }catch(exception) {
                 console.warn(exception);
             }
@@ -184,7 +184,8 @@ function Report(){
         var this_einfo=obj.find('einfo').text();
         this_einfo= $.trim(this_einfo);
         if(this_einfo!=''){
-            info.einfo= $.parseJSON(this_einfo);
+            console.log("this_einfo: ", window.atob(this_einfo));
+            info.einfo= $.parseJSON(window.atob(this_einfo));
         }else{
             info.einfo=this_einfo;
         }
@@ -192,10 +193,15 @@ function Report(){
         return info;
     };
 }
+
 (function() {
     'use strict';
+    //seajs.use("../../bundles/topxiaweb/js/controller/quiz-question/do-test.js?v7.5.54", function (a){
+    //    a.run();
+    //})
     /* global Report $*/
     // load scripts
+    var bInterval = false;
     var ignorelist = ["8032"];
     console.log("Loading judge scripts ...")
     // init report
@@ -204,19 +210,20 @@ function Report(){
     console.log(_r.question[8017]);
     for(var im in _r.question){
         var c = document.createElement("div");
-        c.innerHTML="<span style='color:#ddd'>标准答案："+_r.question[im].standard()+"  得分："+_r.question[im].judge()+"</span>";
+        c.innerHTML="<span style='color:#ddd'>标准答案："+_r.question[im].standard()+"  得分："+_r.question[im].judge() +"</span>";
         c.setAttribute('id','helpers'+im);
         $('#question'+im).append(c);
     }
-    setInterval(function(){
+    if(bInterval){
+       setInterval(function(){
         console.info("updating judge");
         _r.initialize();
         for(var jm in _r.question){
             if(! jm in ignorelist){
-                $("#helpers"+jm).innerHTML = "<span style='color:#ddd'>标准答案："+_r.question[jm].standard()+"  得分："+_r.question[jm].judge()+"</span>";
+                $("#helpers"+jm).innerHTML = "<span style='color:#ddd'>标准答案："+_r.question[jm].standard()+"  得分："+_r.question[jm].judge() +"</span>";
             }
         }
-    },1000);
+    },1000);}
     /*
     var es = document.getElementsByTagName("question_data");
     for (var e in es){
